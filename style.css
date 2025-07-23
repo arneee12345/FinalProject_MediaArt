@@ -68,7 +68,9 @@ ul#leaderboard-list li {
   padding: 8px 14px;
   border-radius: 10px;
   background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+  z-index: 999;
   animation: fadeOut 1s ease forwards;
 }
 

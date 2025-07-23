@@ -5,18 +5,18 @@ let comboCount = 0;
 let lastClickTime = 0;
 let gamePaused = false;
 
-const leaderboardData = [
-  { name: "Player1", score: 101 },
-  { name: "Player2", score: 89 },
-  { name: "YOU", score: 0 },
-  { name: "Player3", score: 75 }
-];
+let leaderboardData = [];
 
 window.addEventListener("DOMContentLoaded", () => {
   const scoreEl = document.getElementById("score");
   const timerEl = document.getElementById("timer");
   const button = document.getElementById("click-button");
   const list = document.getElementById("leaderboard-list");
+  const leaderboardTitle = document.querySelector("h2");
+
+  // Hide leaderboard initially
+  leaderboardTitle.style.display = "none";
+  list.style.display = "none";
 
   function renderLeaderboard() {
     const sorted = [...leaderboardData].sort((a, b) => b.score - a.score);
@@ -31,19 +31,11 @@ window.addEventListener("DOMContentLoaded", () => {
   function showPopup(text, positive = true) {
     const popup = document.createElement("div");
     popup.textContent = text;
-    popup.style.position = "absolute";
-    popup.style.left = Math.random() * 80 + 10 + "%";
-    popup.style.top = Math.random() * 60 + 20 + "%";
-    popup.style.fontWeight = "bold";
+    popup.className = "point-popup";
+    popup.style.left = `${Math.random() < 0.5 ? 5 + Math.random() * 20 : 75 + Math.random() * 20}%`;
+    popup.style.top = `${Math.random() * 60 + 10}%`;
     popup.style.color = positive ? "green" : "red";
-    popup.style.background = "#fff";
-    popup.style.border = "1px solid #ccc";
-    popup.style.padding = "5px 10px";
-    popup.style.borderRadius = "6px";
-    popup.style.zIndex = 1000;
-    popup.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
     document.body.appendChild(popup);
-
     setTimeout(() => popup.remove(), 1000);
   }
 
@@ -82,8 +74,6 @@ window.addEventListener("DOMContentLoaded", () => {
     lastClickTime = now;
     score += pts;
     scoreEl.textContent = score;
-    leaderboardData.find(p => p.name === "YOU").score = score;
-    renderLeaderboard();
   });
 
   interval = setInterval(() => {
@@ -96,11 +86,22 @@ window.addEventListener("DOMContentLoaded", () => {
       clearInterval(interval);
       button.disabled = true;
       timerEl.textContent = "Time's up!";
+
+      // Generate leaderboard so user is almost #1
+      const topScore = score + Math.floor(Math.random() * 3) + 2;
+      leaderboardData = [
+        { name: "Player1", score: topScore },
+        { name: "YOU", score: score },
+        { name: "Player2", score: Math.floor(score * 0.9) },
+        { name: "Player3", score: Math.floor(score * 0.7) }
+      ];
+
+      // Show leaderboard
+      leaderboardTitle.style.display = "block";
+      list.style.display = "block";
+      renderLeaderboard();
     } else {
       timerEl.textContent = `Time left: ${timeLeft}s`;
     }
   }, 1000);
-
-  renderLeaderboard();
 });
-
