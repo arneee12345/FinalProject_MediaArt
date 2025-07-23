@@ -3,6 +3,7 @@ let timeLeft = 60;
 let interval;
 let comboCount = 0;
 let lastClickTime = 0;
+let gamePaused = false;
 
 const leaderboardData = [
   { name: "Player1", score: 101 },
@@ -46,7 +47,26 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => popup.remove(), 1000);
   }
 
+  function showInterruptivePopup() {
+    gamePaused = true;
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <div style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+                  background: #fff; border: 2px solid #444; padding: 20px; z-index: 9999;
+                  box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; text-align: center;">
+        <p>📢 Please accept our new cookie policy to continue.</p>
+        <button id="accept-popup">Accept</button>
+      </div>`;
+    document.body.appendChild(wrapper);
+    document.getElementById("accept-popup").addEventListener("click", () => {
+      wrapper.remove();
+      gamePaused = false;
+    });
+  }
+
   button.addEventListener("click", () => {
+    if (gamePaused) return;
+
     const now = Date.now();
     let pts = 1;
 
@@ -67,7 +87,11 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   interval = setInterval(() => {
+    if (gamePaused) return;
+
     timeLeft--;
+    if (timeLeft === 30) showInterruptivePopup();
+
     if (timeLeft <= 0) {
       clearInterval(interval);
       button.disabled = true;
@@ -79,3 +103,4 @@ window.addEventListener("DOMContentLoaded", () => {
 
   renderLeaderboard();
 });
+
