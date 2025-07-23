@@ -18,6 +18,19 @@ window.addEventListener("DOMContentLoaded", () => {
   leaderboardTitle.style.display = "none";
   list.style.display = "none";
 
+  const popupTypes = [
+    { label: "🔥 Boost!", value: () => Math.floor(Math.random() * 6) + 5 },
+    { label: "💣 Trap!", value: () => -Math.floor(Math.random() * 5 + 1) },
+    { label: "🎁 Bonus", value: () => Math.floor(Math.random() * 4 + 2) },
+    { label: "🤯 Fake Bonus", value: () => -Math.floor(Math.random() * 3 + 1) },
+    { label: "🧠 Focus Up", value: () => 0 },
+    { label: "👀 Watch out!", value: () => 0 },
+    { label: "💡 Hint?", value: () => Math.random() < 0.5 ? 2 : -2 },
+    { label: "✨ Tap Me!", value: () => Math.random() < 0.7 ? Math.floor(Math.random() * 3 + 1) : 0 },
+    { label: "🌀 Confuse", value: () => 0 },
+    { label: "❓Random", value: () => Math.floor(Math.random() * 7) - 3 }
+  ];
+
   function renderLeaderboard() {
     const sorted = [...leaderboardData].sort((a, b) => b.score - a.score);
     list.innerHTML = "";
@@ -65,76 +78,74 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function spawnClickPopup() {
-  const btn = document.createElement("button");
-  btn.className = "popup-button";
-  btn.textContent = Math.random() < 0.3 ? "Wrong Tap!" : "Tap Me!";
-  const isBad = btn.textContent === "Wrong Tap!";
+    const type = popupTypes[Math.floor(Math.random() * popupTypes.length)];
+    const btn = document.createElement("button");
+    btn.className = "popup-button";
+    btn.textContent = type.label;
 
-  let left = Math.random() * 80 + 10;
-  let top = Math.random() * 50 + 20;
-  btn.style.left = `${left}%`;
-  btn.style.top = `${top}%`;
+    let left = Math.random() * 80 + 10;
+    let top = Math.random() * 50 + 20;
+    btn.style.left = `${left}%`;
+    btn.style.top = `${top}%`;
 
-  // Random animation behavior
-  const behaviors = ["bounce", "jiggle", "spin", "dodge"];
-  const chosen = new Set();
-  const count = Math.floor(Math.random() * 3) + 1;
-  while (chosen.size < count) {
-    chosen.add(behaviors[Math.floor(Math.random() * behaviors.length)]);
-  }
-  chosen.forEach(b => btn.classList.add(b));
+    // Random behaviors
+    const behaviors = ["bounce", "jiggle", "spin", "dodge"];
+    const chosen = new Set();
+    const count = Math.floor(Math.random() * 3) + 1;
+    while (chosen.size < count) {
+      chosen.add(behaviors[Math.floor(Math.random() * behaviors.length)]);
+    }
+    chosen.forEach(b => btn.classList.add(b));
 
-  if (chosen.has("dodge")) {
-    btn.addEventListener("mousemove", (e) => {
-      const rect = btn.getBoundingClientRect();
-      const dx = e.clientX - (rect.left + rect.width / 2);
-      const dy = e.clientY - (rect.top + rect.height / 2);
-      const distance = Math.hypot(dx, dy);
-      if (distance < 50) {
-        left = Math.max(5, Math.min(90, left + (Math.random() - 0.5) * 10));
-        top = Math.max(10, Math.min(80, top + (Math.random() - 0.5) * 10));
-        btn.style.left = `${left}%`;
-        btn.style.top = `${top}%`;
-      }
-    });
-  }
+    if (chosen.has("dodge")) {
+      btn.addEventListener("mousemove", (e) => {
+        const rect = btn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        const distance = Math.hypot(dx, dy);
+        if (distance < 50) {
+          left = Math.max(5, Math.min(90, left + (Math.random() - 0.5) * 10));
+          top = Math.max(10, Math.min(80, top + (Math.random() - 0.5) * 10));
+          btn.style.left = `${left}%`;
+          btn.style.top = `${top}%`;
+        }
+      });
+    }
 
-  btn.addEventListener("click", () => {
-    if (gamePaused) return;
+    btn.addEventListener("click", () => {
+      if (gamePaused) return;
 
-    const now = Date.now();
-    let pts;
+      const now = Date.now();
+      let pts = type.value();
+      let positive = pts >= 0;
 
-    if (isBad) {
-      pts = -Math.floor(Math.random() * 5 + 1); // -1 to -5
-      comboCount = 0; // reset combo
-      showPopup(`${pts}`, false);
-    } else {
-      pts = Math.floor(Math.random() * 5 + 1); // +1 to +5
-
-      if (now - lastClickTime < 2000) {
+      if (pts > 0 && now - lastClickTime < 2000) {
         comboCount++;
         pts += comboCount;
         showPopup(`🔥 Combo x${comboCount}! +${pts}`, true);
-      } else {
+      } else if (pts > 0) {
         comboCount = 1;
         showPopup(`+${pts}`, true);
+      } else if (pts < 0) {
+        comboCount = 0;
+        showPopup(`${pts}`, false);
+      } else {
+        comboCount = 0;
+        showPopup(`🙃 Nothing happened`, true);
       }
-    }
 
-    lastClickTime = now;
-    score += pts;
-    updateProgressBars();
-    btn.remove();
-  });
+      lastClickTime = now;
+      score += pts;
+      updateProgressBars();
+      btn.remove();
+    });
 
-  document.body.appendChild(btn);
+    document.body.appendChild(btn);
 
-  setTimeout(() => {
-    if (btn.parentNode) btn.remove();
-  }, 7000);
-}
-
+    setTimeout(() => {
+      if (btn.parentNode) btn.remove();
+    }, 7000);
+  }
 
   interval = setInterval(() => {
     if (gamePaused) return;
@@ -143,10 +154,10 @@ window.addEventListener("DOMContentLoaded", () => {
     passiveScore += 0.3;
     updateProgressBars();
 
-const popupAttempts = Math.floor(Math.random() * 3) + 1;
-for (let i = 0; i < popupAttempts; i++) {
-  if (Math.random() < 0.7) spawnClickPopup();
-}
+    const popupAttempts = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < popupAttempts; i++) {
+      if (Math.random() < 0.7) spawnClickPopup();
+    }
 
     if (timeLeft === 30) showInterruptivePopup();
 

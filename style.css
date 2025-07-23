@@ -76,7 +76,7 @@ ul#leaderboard-list li {
   background-color: #ff3b30;
 }
 
-/* Popups and overlays */
+/* Popups (Feedback) */
 .point-popup {
   position: absolute;
   font-size: 1.1rem;
@@ -86,7 +86,7 @@ ul#leaderboard-list li {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-weight: bold;
   z-index: 999;
-  animation: fadeOut 1s ease forwards;
+  animation: fadeOut 1.5s ease forwards;
 }
 
 @keyframes fadeOut {
@@ -94,6 +94,7 @@ ul#leaderboard-list li {
   100% { opacity: 0; transform: translateY(-20px); }
 }
 
+/* Popup Buttons (spawned targets) */
 .popup-button {
   position: absolute;
   font-size: 1.1rem;
@@ -103,22 +104,20 @@ ul#leaderboard-list li {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   font-weight: bold;
   z-index: 1000;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
-/* Appear with bounce */
+/* Behavior Animations */
 .popup-button.bounce {
   animation: bounceIn 0.4s ease;
 }
 
-/* Jiggle on hover */
 .popup-button.jiggle:hover {
   animation: jiggle 0.5s infinite;
 }
 
-/* Spin effect */
 .popup-button.spin {
   animation: spinLoop 2s linear infinite;
 }
@@ -141,8 +140,25 @@ ul#leaderboard-list li {
   100% { transform: rotate(360deg); }
 }
 
+/* Popup Intent Colors (optional styling cues) */
+.popup-button:has(:contains("💣")),
+.popup-button:has(:contains("Trap")) {
+  border-color: #e74c3c;
+  background: #ffeaea;
+}
 
+.popup-button:has(:contains("🎁")),
+.popup-button:has(:contains("Bonus")) {
+  border-color: #2ecc71;
+  background: #eaffea;
+}
 
+.popup-button:has(:contains("🤯")),
+.popup-button:has(:contains("Confuse")),
+.popup-button:has(:contains("Fake")) {
+  border-color: #f39c12;
+  background: #fff8e1;
+}
 
 /* Responsive layout */
 @media screen and (max-width: 768px) {
