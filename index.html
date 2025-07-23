@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Better Than You (v4)</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Better Than You</h1>
   <p id="timer">Time left: 60s</p>
-  <p>Score: <span id="score">0</span></p>
-  <button id="click-button">Click Me!</button>
+
+  <div class="progress-container">
+    <p>You</p>
+    <div class="progress-bar-bg">
+      <div id="user-progress" class="progress-fill user"></div>
+    </div>
+    <p>Player1</p>
+    <div class="progress-bar-bg">
+      <div id="opponent-progress" class="progress-fill opponent"></div>
+    </div>
+  </div>
 
   <h2>Leaderboard</h2>
   <ul id="leaderboard-list"></ul>

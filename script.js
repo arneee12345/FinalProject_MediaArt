@@ -4,17 +4,18 @@ let interval;
 let comboCount = 0;
 let lastClickTime = 0;
 let gamePaused = false;
+let passiveScore = 0;
 
 let leaderboardData = [];
 
 window.addEventListener("DOMContentLoaded", () => {
-  const scoreEl = document.getElementById("score");
   const timerEl = document.getElementById("timer");
-  const button = document.getElementById("click-button");
   const list = document.getElementById("leaderboard-list");
   const leaderboardTitle = document.querySelector("h2");
 
-  // Hide leaderboard initially
+  const userProgressEl = document.getElementById("user-progress");
+  const opponentProgressEl = document.getElementById("opponent-progress");
+
   leaderboardTitle.style.display = "none";
   list.style.display = "none";
 
@@ -28,6 +29,14 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function updateProgressBars() {
+    const totalScore = score + passiveScore;
+    const userPercent = Math.min((totalScore / 400) * 100, 95);
+    const opponentPercent = Math.min(userPercent + 5 + Math.random() * 3, 100);
+    userProgressEl.style.width = `${userPercent}%`;
+    opponentProgressEl.style.width = `${opponentPercent}%`;
+  }
+
   function showPopup(text, positive = true) {
     const popup = document.createElement("div");
     popup.textContent = text;
@@ -36,7 +45,7 @@ window.addEventListener("DOMContentLoaded", () => {
     popup.style.top = `${Math.random() * 60 + 10}%`;
     popup.style.color = positive ? "green" : "red";
     document.body.appendChild(popup);
-    setTimeout(() => popup.remove(), 1000);
+    setTimeout(() => popup.remove(), 4000);
   }
 
   function showInterruptivePopup() {
@@ -56,38 +65,61 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  button.addEventListener("click", () => {
+  function spawnClickPopup() {
+  const btn = document.createElement("button");
+  btn.className = "popup-button"; // ⬅️ new class, no fade animation
+  btn.textContent = Math.random() < 0.3 ? "Wrong Tap!" : "Tap Me!";
+  const bad = btn.textContent === "Wrong Tap!";
+  btn.style.left = `${Math.random() * 80 + 10}%`;
+  btn.style.top = `${Math.random() * 50 + 20}%`;
+
+  btn.addEventListener("click", () => {
     if (gamePaused) return;
 
     const now = Date.now();
-    let pts = 1;
+    let pts = bad ? -Math.floor(Math.random() * 4 + 1) : 1;
 
-    if (now - lastClickTime < 1000) {
+    if (!bad && now - lastClickTime < 2000) {
       comboCount++;
       pts += comboCount;
       showPopup(`🔥 Combo x${comboCount}! +${pts}`, true);
-    } else {
+    } else if (!bad) {
       comboCount = 0;
       showPopup("+1", true);
+    } else {
+      comboCount = 0;
+      showPopup(`${pts}`, false);
     }
 
     lastClickTime = now;
     score += pts;
-    scoreEl.textContent = score;
+    updateProgressBars();
+    btn.remove();
   });
+
+  document.body.appendChild(btn);
+
+  // Remove after 7 seconds
+  setTimeout(() => {
+    if (btn.parentNode) btn.remove();
+  }, 3000);
+}
+
 
   interval = setInterval(() => {
     if (gamePaused) return;
 
     timeLeft--;
+    passiveScore += 0.3;
+    updateProgressBars();
+
+    if (Math.random() < 0.5) spawnClickPopup();
     if (timeLeft === 30) showInterruptivePopup();
 
     if (timeLeft <= 0) {
       clearInterval(interval);
-      button.disabled = true;
       timerEl.textContent = "Time's up!";
 
-      // Generate leaderboard so user is almost #1
       const topScore = score + Math.floor(Math.random() * 3) + 2;
       leaderboardData = [
         { name: "Player1", score: topScore },
@@ -96,7 +128,6 @@ window.addEventListener("DOMContentLoaded", () => {
         { name: "Player3", score: Math.floor(score * 0.7) }
       ];
 
-      // Show leaderboard
       leaderboardTitle.style.display = "block";
       list.style.display = "block";
       renderLeaderboard();
@@ -104,4 +135,6 @@ window.addEventListener("DOMContentLoaded", () => {
       timerEl.textContent = `Time left: ${timeLeft}s`;
     }
   }, 1000);
+
+  updateProgressBars();
 });
