@@ -12,7 +12,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const timerEl = document.getElementById("timer");
   const list = document.getElementById("leaderboard-list");
   const leaderboardTitle = document.querySelector("h2");
-
   const userProgressEl = document.getElementById("user-progress");
   const opponentProgressEl = document.getElementById("opponent-progress");
 
@@ -67,28 +66,60 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function spawnClickPopup() {
   const btn = document.createElement("button");
-  btn.className = "popup-button"; // ⬅️ new class, no fade animation
+  btn.className = "popup-button";
   btn.textContent = Math.random() < 0.3 ? "Wrong Tap!" : "Tap Me!";
-  const bad = btn.textContent === "Wrong Tap!";
-  btn.style.left = `${Math.random() * 80 + 10}%`;
-  btn.style.top = `${Math.random() * 50 + 20}%`;
+  const isBad = btn.textContent === "Wrong Tap!";
+
+  let left = Math.random() * 80 + 10;
+  let top = Math.random() * 50 + 20;
+  btn.style.left = `${left}%`;
+  btn.style.top = `${top}%`;
+
+  // Random animation behavior
+  const behaviors = ["bounce", "jiggle", "spin", "dodge"];
+  const chosen = new Set();
+  const count = Math.floor(Math.random() * 3) + 1;
+  while (chosen.size < count) {
+    chosen.add(behaviors[Math.floor(Math.random() * behaviors.length)]);
+  }
+  chosen.forEach(b => btn.classList.add(b));
+
+  if (chosen.has("dodge")) {
+    btn.addEventListener("mousemove", (e) => {
+      const rect = btn.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+      const distance = Math.hypot(dx, dy);
+      if (distance < 50) {
+        left = Math.max(5, Math.min(90, left + (Math.random() - 0.5) * 10));
+        top = Math.max(10, Math.min(80, top + (Math.random() - 0.5) * 10));
+        btn.style.left = `${left}%`;
+        btn.style.top = `${top}%`;
+      }
+    });
+  }
 
   btn.addEventListener("click", () => {
     if (gamePaused) return;
 
     const now = Date.now();
-    let pts = bad ? -Math.floor(Math.random() * 4 + 1) : 1;
+    let pts;
 
-    if (!bad && now - lastClickTime < 2000) {
-      comboCount++;
-      pts += comboCount;
-      showPopup(`🔥 Combo x${comboCount}! +${pts}`, true);
-    } else if (!bad) {
-      comboCount = 0;
-      showPopup("+1", true);
-    } else {
-      comboCount = 0;
+    if (isBad) {
+      pts = -Math.floor(Math.random() * 5 + 1); // -1 to -5
+      comboCount = 0; // reset combo
       showPopup(`${pts}`, false);
+    } else {
+      pts = Math.floor(Math.random() * 5 + 1); // +1 to +5
+
+      if (now - lastClickTime < 2000) {
+        comboCount++;
+        pts += comboCount;
+        showPopup(`🔥 Combo x${comboCount}! +${pts}`, true);
+      } else {
+        comboCount = 1;
+        showPopup(`+${pts}`, true);
+      }
     }
 
     lastClickTime = now;
@@ -99,10 +130,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.body.appendChild(btn);
 
-  // Remove after 7 seconds
   setTimeout(() => {
     if (btn.parentNode) btn.remove();
-  }, 3000);
+  }, 7000);
 }
 
 
@@ -113,12 +143,17 @@ window.addEventListener("DOMContentLoaded", () => {
     passiveScore += 0.3;
     updateProgressBars();
 
-    if (Math.random() < 0.5) spawnClickPopup();
+const popupAttempts = Math.floor(Math.random() * 3) + 1;
+for (let i = 0; i < popupAttempts; i++) {
+  if (Math.random() < 0.7) spawnClickPopup();
+}
+
     if (timeLeft === 30) showInterruptivePopup();
 
     if (timeLeft <= 0) {
       clearInterval(interval);
       timerEl.textContent = "Time's up!";
+      document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
 
       const topScore = score + Math.floor(Math.random() * 3) + 2;
       leaderboardData = [
