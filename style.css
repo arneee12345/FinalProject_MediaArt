@@ -1,0 +1,94 @@
+/* Reset & base styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-top: 1.5rem;
+  color: #111;
+}
+
+p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background: #007aff;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  margin: 1rem auto;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #005ecb;
+}
+
+#click-button {
+  display: block;
+}
+
+/* Leaderboard styling */
+h2 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+}
+
+ul#leaderboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 300px;
+}
+
+ul#leaderboard-list li {
+  background: white;
+  margin: 0.5rem;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+}
+
+/* Popups and overlays */
+.point-popup {
+  position: absolute;
+  font-size: 1.1rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  animation: fadeOut 1s ease forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+/* Responsive layout */
+@media screen and (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  button {
+    width: 90%;
+    max-width: 300px;
+  }
+
+  ul#leaderboard-list li {
+    font-size: 0.95rem;
+  }
+}
