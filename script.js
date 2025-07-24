@@ -10,6 +10,9 @@ let userName = "YOU";
 let userAge = "-";
 let leaderboardData = [];
 let goalAnimationInterval = null;
+let realClicks = 0;
+let fakeClicks = 0;
+
 
 window.addEventListener("DOMContentLoaded", () => {
   const timerEl = document.getElementById("timer");
@@ -82,6 +85,21 @@ window.addEventListener("DOMContentLoaded", () => {
       { label: "🎉 Confettiii!", value: () => 0 }
     ];
     
+    const endingMessages = {
+      focused: [
+        "You won... but missed all the sparkles.",
+        "Congrats! Following instrucitons... boring.."
+      ],
+      distracted: [
+        "{points} points.. but look at all that fun!!",
+        "Clicked a lot but wrong.. A+ in attention deficit!"
+      ],
+      balanced: [
+        "Perfect mediocrity achieved.",
+        "Some focus, some fun... classic human behavior."
+      ]
+    };
+
     function playSound(id) {
     const audio = document.getElementById(id);
     if (audio) {
@@ -153,8 +171,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.createElement("div");
   wrapper.className = "interruptive-popup";
   let message = "📢 Please accept our new cookie policy to continue.";
-  if (type === "feedback") message = "📝 We'd love your feedback!";
-  if (type === "follow") message = "📸 Follow us on Instagram!";
+  if (type === "feedback") message = "📝 You are giving us a 5 star rating, correct?";
+  if (type === "follow") message = "📸 You have to follow us on all socials afterwards!";
 
   wrapper.innerHTML = `
     <div id="interrupt-box" style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
@@ -216,6 +234,7 @@ window.addEventListener("DOMContentLoaded", () => {
     goalAnimationInterval = animateGoalButton();
 
     trueGoalBtn.addEventListener("click", () => {
+      realClicks++;
       const now = Date.now();
       playClickSound();
       if (now - goalBtnLastClick < 1200 || gamePaused) return;
@@ -270,7 +289,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
       btn.addEventListener("click", () => {
         if (gamePaused) return;
-        playRandomSound(); // 🔊 play fun effect
+        fakeClicks++;
+        playRandomSound();
         const pts = type.value();
         comboCount = 0;
         if (pts > 0) showPopup(`+${pts}`, true);
@@ -315,17 +335,19 @@ window.addEventListener("DOMContentLoaded", () => {
         clearInterval(goalAnimationInterval);
         timerEl.textContent = "Time's up!";
         document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
+        document.getElementById("ending-message")?.remove();
         document.getElementById("true-goal-button")?.remove();
         leaderboardTitle.style.display = "block";
         list.style.display = "block";
         renderLeaderboard();
+        showEndingMessage();
 
         const again = document.createElement("button");
         again.id = "play-again";
         again.textContent = "🔁 Play Again";
         again.style = `
           position: fixed;
-          bottom: 20px;
+          bottom: 15px;
           left: 50%;
           transform: translateX(-50%);
           padding: 12px 20px;
@@ -344,6 +366,46 @@ window.addEventListener("DOMContentLoaded", () => {
         timerEl.textContent = `Time left: ${timeLeft}s`;
       }
     }, 1000);
+
+
+  function showEndingMessage() {
+    let behavior;
+    const total = realClicks + fakeClicks;
+
+    if (realClicks > fakeClicks * 1.5) behavior = "focused";
+    else if (fakeClicks > realClicks * 1.5) behavior = "distracted";
+    else behavior = "balanced";
+
+    const messagePool = endingMessages[behavior];
+    let message = messagePool[Math.floor(Math.random() * messagePool.length)];
+
+    if (message.includes("{points}")) {
+      message = message.replace("{points}", score);
+    }
+
+    document.getElementById("ending-message")?.remove();
+
+    const finalMsg = document.createElement("p");
+    finalMsg.id = "ending-message";
+    finalMsg.style = `
+      font-size: 1.2rem;
+      margin-top: 2rem;
+      color: #222;
+      background: #fffbe0;
+      padding: 12px 20px;
+      border: 2px dashed #999;
+      border-radius: 10px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      z-index: 999;
+      position: relative;
+    `;
+    finalMsg.textContent = `🧠 ${message}`;
+    document.body.appendChild(finalMsg);
+  }
+
 
     updateProgressBars();
   }
