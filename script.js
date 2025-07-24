@@ -90,12 +90,19 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+    function playClickSound() {
+    const audio = document.getElementById("sfx-click");
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play();
+    }
+  }
+
     function playRandomSound() {
     const sounds = ["sfx-coin", "sfx-confetti", "sfx-fireworks", "sfx-sparkle", "sfx-wow"];
     const random = sounds[Math.floor(Math.random() * sounds.length)];
     playSound(random);
   }
-
 
     function renderLeaderboard() {
       const fakeWin = Math.random() < 0.5;
@@ -114,6 +121,7 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+
     function updateProgressBars() {
       const maxScore = 50;
       const totalScore = score + passiveScore;
@@ -123,15 +131,19 @@ window.addEventListener("DOMContentLoaded", () => {
       opponentProgressEl.style.width = `${opponentPercent}%`;
     }
 
-    function showPopup(text, positive = true) {
+    function showPopup(text, positive = true, isReal = false) {
       const popup = document.createElement("div");
       popup.textContent = text;
       popup.className = "point-popup";
+
+      if (isReal) popup.classList.add("true-popup");
+
       popup.style.left = `${Math.random() * 80 + 10}%`;
       popup.style.top = `${Math.random() * 60 + 10}%`;
       popup.style.color = positive ? "green" : "red";
       document.body.appendChild(popup);
-      setTimeout(() => popup.remove(), 1000);
+
+      setTimeout(() => popup.remove(), 1200);
     }
 
     function showInterruptivePopup(type = "cookie") {
@@ -205,16 +217,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
     trueGoalBtn.addEventListener("click", () => {
       const now = Date.now();
+      playClickSound();
       if (now - goalBtnLastClick < 1200 || gamePaused) return;
       goalBtnLastClick = now;
       let pts = 1;
       if (now - lastClickTime < 2000) {
         comboCount++;
         pts += comboCount;
-        showPopup(`💡 Combo x${comboCount}! +${pts}`, true);
+        showPopup(`💡 Combo x${comboCount}! +${pts}`, true, true);
       } else {
         comboCount = 1;
-        showPopup(`+${pts}`, true);
+        showPopup(`+${pts}`, true, true);
       }
       lastClickTime = now;
       score += pts;

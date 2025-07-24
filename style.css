@@ -122,6 +122,15 @@ ul#leaderboard-list li {
   z-index: 9999;
 }
 
+.point-popup.true-popup {
+  background: #ccc;
+  border: 1px solid #999;
+  color: #444 !important;
+  box-shadow: none;
+  animation: none;
+  font-weight: normal;
+}
+
 
 /* Distractor Buttons */
 .popup-button {
