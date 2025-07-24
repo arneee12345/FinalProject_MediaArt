@@ -1,65 +1,80 @@
-/* Reset & base styles */
+/* Hyper-Clickbait Meme UI Styles */
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, sans-serif;
-  background: #f9f9f9;
-  color: #333;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: linear-gradient(to bottom right, #fffbcc, #ffd6d6);
+  color: #111;
   text-align: center;
+  overflow-x: hidden;
 }
 
 h1 {
-  font-size: 1.8rem;
+  font-size: 2.5rem;
   margin-top: 1.5rem;
-  color: #111;
+  color: #ff0000;
+  text-shadow: 2px 2px #fff700;
+  animation: blink 1s infinite;
 }
 
 p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   margin: 0.5rem 0;
+  color: #222;
 }
 
-/* Leaderboard styling */
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   margin-top: 2rem;
+  color: #0055ff;
+  text-shadow: 1px 1px #fff;
 }
 
 ul#leaderboard-list {
   list-style: none;
   padding: 0;
   margin: 0 auto;
-  max-width: 320px;
+  max-width: 360px;
+  background: #fff;
+  border: 2px dashed red;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+  border-radius: 12px;
 }
 
 ul#leaderboard-list li {
-  background: white;
+  background: #f0f0f0;
   margin: 0.5rem;
-  padding: 10px;
+  padding: 14px;
   border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  font-weight: 500;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #ff0000;
+  text-shadow: 1px 1px #fff;
 }
 
 /* Progress Bars */
 .progress-container {
-  max-width: 320px;
+  max-width: 360px;
   margin: 2rem auto 1rem;
   text-align: left;
+  padding: 0 1rem;
 }
 
 .progress-container p {
   margin: 0.4rem 0 0.2rem;
-  font-weight: 500;
+  font-weight: bold;
+  color: #0000ff;
+  font-size: 1.1rem;
 }
 
 .progress-bar-bg {
-  background: #e0e0e0;
-  border-radius: 8px;
-  height: 14px;
+  background: #eee;
+  border-radius: 10px;
+  height: 18px;
   width: 100%;
   margin-bottom: 1rem;
   overflow: hidden;
+  border: 2px solid #ff0000;
 }
 
 .progress-fill {
@@ -69,108 +84,76 @@ ul#leaderboard-list li {
 }
 
 .progress-fill.user {
-  background-color: #007aff;
+  background-color: #00cc00;
 }
 
 .progress-fill.opponent {
   background-color: #ff3b30;
 }
 
-/* Popups (Feedback) */
+/* Popups */
 .point-popup {
   position: absolute;
-  font-size: 1.1rem;
-  padding: 8px 14px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 1.4rem;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px dotted #000;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.25);
   font-weight: bold;
   z-index: 999;
-  animation: fadeOut 1.5s ease forwards;
+  color: #000;
+  animation: shake 0.6s infinite;
 }
 
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-20px); }
-}
-
-/* Popup Buttons (spawned targets) */
 .popup-button {
   position: absolute;
-  font-size: 1.1rem;
-  padding: 10px 18px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 1.2rem;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: #ff0;
+  color: #000;
+  border: 3px solid #ff0000;
   font-weight: bold;
   z-index: 1000;
-  border: 2px solid #ccc;
   cursor: pointer;
-  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 15px #ff0000;
+  animation: pulse 1s infinite;
 }
 
-/* Behavior Animations */
-.popup-button.bounce {
-  animation: bounceIn 0.4s ease;
-}
-
-.popup-button.jiggle:hover {
-  animation: jiggle 0.5s infinite;
-}
-
-.popup-button.spin {
-  animation: spinLoop 2s linear infinite;
-}
-
-@keyframes bounceIn {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
-@keyframes jiggle {
-  0%, 100% { transform: rotate(-1deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(-2deg); }
-  75% { transform: rotate(1deg); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
 }
 
-@keyframes spinLoop {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
-/* Popup Intent Colors (optional styling cues) */
-.popup-button:has(:contains("💣")),
-.popup-button:has(:contains("Trap")) {
-  border-color: #e74c3c;
-  background: #ffeaea;
-}
-
-.popup-button:has(:contains("🎁")),
-.popup-button:has(:contains("Bonus")) {
-  border-color: #2ecc71;
-  background: #eaffea;
-}
-
-.popup-button:has(:contains("🤯")),
-.popup-button:has(:contains("Confuse")),
-.popup-button:has(:contains("Fake")) {
-  border-color: #f39c12;
-  background: #fff8e1;
-}
-
-/* Responsive layout */
 @media screen and (max-width: 768px) {
   body {
     padding: 10px;
   }
 
+  h1 {
+    font-size: 2rem;
+  }
+
   ul#leaderboard-list li {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .progress-container {
-    max-width: 90%;
+    max-width: 95%;
   }
 }
