@@ -131,7 +131,6 @@ ul#leaderboard-list li {
   font-weight: normal;
 }
 
-
 /* Distractor Buttons */
 .popup-button {
   position: absolute;
@@ -147,6 +146,27 @@ ul#leaderboard-list li {
   box-shadow: 0 0 20px #ff0000;
   animation: pulse 1s infinite;
   transition: all 0.3s ease;
+}
+
+/* Distractor Button Animations */
+.popup-button.spin {
+  animation: spinLoop 1.5s linear infinite;
+}
+
+.popup-button.bounce {
+  animation: bounce 1s ease infinite;
+}
+
+.popup-button.jiggle {
+  animation: jiggle 0.5s ease-in-out infinite;
+}
+
+.popup-button.wobble {
+  animation: wobble 1s ease-in-out infinite;
+}
+
+.popup-button.slide {
+  animation: slide 1s ease infinite;
 }
 
 /* Main Goal Button – intentionally boring */
@@ -195,6 +215,37 @@ ul#leaderboard-list li {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes jiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  25% { transform: rotate(2deg); }
+  50% { transform: rotate(-2deg); }
+  75% { transform: rotate(1deg); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes slide {
+  0% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  100% { transform: translateX(-5px); }
+}
+
+@keyframes explode {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Responsive */
 @media screen and (max-width: 768px) {
   body {
     padding: 10px;
