@@ -140,7 +140,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(wrapper);
   const popupBox = document.getElementById("interrupt-box");
 
-  // Enable dodging for 10 seconds
   let dodging = true;
   const dodgeTimer = setTimeout(() => {
     dodging = false;

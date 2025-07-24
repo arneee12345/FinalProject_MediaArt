@@ -1,76 +1,91 @@
-/* Hyper-Clickbait Meme UI Styles */
+/* Colorful Meme Style UI */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Comic Sans MS', cursive, sans-serif;
-  background: linear-gradient(to bottom right, #fffbcc, #ffd6d6);
+  background: linear-gradient(135deg, #fff700, #ff00c8, #00f6ff);
+  background-size: 400% 400%;
+  animation: bgPulse 10s ease infinite;
   color: #111;
   text-align: center;
   overflow-x: hidden;
 }
 
+@keyframes bgPulse {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 h1 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin-top: 1.5rem;
   color: #ff0000;
-  text-shadow: 2px 2px #fff700;
-  animation: blink 1s infinite;
+  text-shadow: 3px 3px 0px #fff700, 0 0 10px #ff00ff;
+  animation: blink 0.8s infinite alternate;
 }
 
 p {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   margin: 0.5rem 0;
-  color: #222;
+  color: #111;
+  text-shadow: 1px 1px 0px #fff;
 }
 
 h2 {
-  font-size: 1.6rem;
+  font-size: 2rem;
   margin-top: 2rem;
-  color: #0055ff;
-  text-shadow: 1px 1px #fff;
+  color: #00f;
+  text-shadow: 2px 2px #fff;
+  animation: wiggle 2s infinite;
 }
 
+/* Leaderboard */
 ul#leaderboard-list {
   list-style: none;
   padding: 0;
   margin: 0 auto;
   max-width: 360px;
-  background: #fff;
-  border: 2px dashed red;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 4px double #ff00ff;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  border-radius: 14px;
 }
 
 ul#leaderboard-list li {
-  background: #f0f0f0;
+  background: linear-gradient(to right, #ffd6d6, #fffbcc);
   margin: 0.5rem;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 12px;
   font-weight: bold;
-  font-size: 1.2rem;
-  color: #ff0000;
+  font-size: 1.3rem;
+  color: #e60000;
   text-shadow: 1px 1px #fff;
+  animation: bounceIn 0.5s ease;
 }
 
 /* Progress Bars */
 .progress-container {
-  max-width: 360px;
+  max-width: 380px;
   margin: 2rem auto 1rem;
   text-align: left;
   padding: 0 1rem;
+  background: #fff4f4;
+  border: 3px dashed #000;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #00000033;
 }
 
 .progress-container p {
   margin: 0.4rem 0 0.2rem;
   font-weight: bold;
   color: #0000ff;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .progress-bar-bg {
-  background: #eee;
+  background: #eeeeee;
   border-radius: 10px;
-  height: 18px;
+  height: 20px;
   width: 100%;
   margin-bottom: 1rem;
   overflow: hidden;
@@ -84,44 +99,46 @@ ul#leaderboard-list li {
 }
 
 .progress-fill.user {
-  background-color: #00cc00;
+  background: repeating-linear-gradient(45deg, lime, lime 10px, #00ffcc 10px, #00ffcc 20px);
 }
 
 .progress-fill.opponent {
-  background-color: #ff3b30;
+  background: repeating-linear-gradient(-45deg, red, red 10px, orange 10px, orange 20px);
 }
 
 /* Popups */
 .point-popup {
   position: absolute;
-  font-size: 1.4rem;
-  padding: 10px 16px;
-  border-radius: 12px;
+  font-size: 1.5rem;
+  padding: 12px 18px;
+  border-radius: 16px;
   background: #fff;
-  border: 2px dotted #000;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.25);
+  border: 3px dotted #000;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.35);
   font-weight: bold;
   z-index: 999;
   color: #000;
   animation: shake 0.6s infinite;
 }
 
+/* Distractor Buttons */
 .popup-button {
   position: absolute;
-  font-size: 1.2rem;
-  padding: 14px 22px;
-  border-radius: 14px;
+  font-size: 1.3rem;
+  padding: 16px 24px;
+  border-radius: 18px;
   background: #ff0;
   color: #000;
   border: 3px solid #ff0000;
   font-weight: bold;
   z-index: 1000;
   cursor: pointer;
-  box-shadow: 0 0 15px #ff0000;
+  box-shadow: 0 0 20px #ff0000;
   animation: pulse 1s infinite;
+  transition: all 0.3s ease;
 }
 
-/* Main goal button – visually boring on purpose */
+/* Main Goal Button – intentionally boring */
 #true-goal-button {
   background: #ccc !important;
   border: 2px solid #999 !important;
@@ -135,7 +152,7 @@ ul#leaderboard-list li {
 /* Animations */
 @keyframes pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
 
@@ -151,37 +168,15 @@ ul#leaderboard-list li {
   50% { opacity: 0.3; }
 }
 
-@keyframes wobble {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(5deg); }
-  50% { transform: rotate(-5deg); }
-  75% { transform: rotate(3deg); }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
 }
-
-@keyframes slide {
-  0% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  100% { transform: translateX(-5px); }
-}
-
-.popup-button.bounce { animation: bounceIn 0.6s ease; }
-.popup-button.jiggle:hover { animation: jiggle 0.4s infinite; }
-.popup-button.spin { animation: spinLoop 2s linear infinite; }
-.popup-button.shake { animation: shake 0.6s infinite; }
-.popup-button.wobble { animation: wobble 0.8s infinite; }
-.popup-button.slide { animation: slide 1s infinite; }
 
 @keyframes bounceIn {
-  0% { transform: scale(0.3); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
+  0% { transform: scale(0.2); opacity: 0; }
+  60% { transform: scale(1.3); opacity: 1; }
   100% { transform: scale(1); }
-}
-
-@keyframes jiggle {
-  0%, 100% { transform: rotate(-1deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(-2deg); }
-  75% { transform: rotate(1deg); }
 }
 
 @keyframes spinLoop {
@@ -195,11 +190,11 @@ ul#leaderboard-list li {
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   ul#leaderboard-list li {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .progress-container {
