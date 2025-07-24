@@ -70,6 +70,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
     document.getElementById("true-goal-button")?.remove();
     document.getElementById("play-again")?.remove();
+    document.querySelector(".final-message")?.remove();
     leaderboardTitle.style.display = "none";
     list.style.display = "none";
 
@@ -87,8 +88,8 @@ window.addEventListener("DOMContentLoaded", () => {
     
     const endingMessages = {
       focused: [
-        "You won... but missed all the sparkles.",
-        "Congrats! Following instrucitons... boring.."
+        "You missed all the sparkles and didn't even win..",
+        "So close to being first.. Try again!"
       ],
       distracted: [
         "{points} points.. but look at all that fun!!",
@@ -386,7 +387,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("ending-message")?.remove();
 
     const finalMsg = document.createElement("p");
-    finalMsg.id = "ending-message";
+    finalMsg.className = "final-message";
     finalMsg.style = `
       font-size: 1.2rem;
       margin-top: 2rem;
