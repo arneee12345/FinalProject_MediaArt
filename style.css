@@ -109,17 +109,19 @@ ul#leaderboard-list li {
 /* Popups */
 .point-popup {
   position: absolute;
-  font-size: 1.5rem;
-  padding: 12px 18px;
-  border-radius: 16px;
-  background: #fff;
-  border: 3px dotted #000;
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.35);
+  font-size: 2rem;
+  padding: 12px 20px;
+  border-radius: 20px;
+  background: radial-gradient(circle at top left, #ff69b4, #ffcc00, #00ffff);
+  border: 3px dashed #fff;
+  box-shadow: 0 0 20px rgba(255, 0, 200, 0.8), 0 0 10px rgba(255, 255, 255, 0.6) inset;
   font-weight: bold;
-  z-index: 999;
-  color: #000;
-  animation: shake 0.6s infinite;
+  color: #fff;
+  text-shadow: 1px 1px 3px #000;
+  animation: explode 0.6s ease-out, shake 0.6s infinite;
+  z-index: 9999;
 }
+
 
 /* Distractor Buttons */
 .popup-button {

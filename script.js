@@ -71,16 +71,31 @@ window.addEventListener("DOMContentLoaded", () => {
     list.style.display = "none";
 
     const popupTypes = [
-      { label: "🚨 Time’s running out!", value: () => 0 },
-      { label: "🎁 Claim your FREE bonus!", value: () => Math.random() < 0.3 ? Math.floor(Math.random() * 5) + 1 : 0 },
-      { label: "🔥 DOUBLE YOUR SCORE", value: () => { score = 0; return 0; } },
-      { label: "✨ Win BIG now!", value: () => 0 },
-      { label: "💥 Click me for sparkles!", value: () => Math.random() < 0.5 ? 3 : -3 },
-      { label: "📈 Fake Level Up!", value: () => 0 },
-      { label: "🔔 You have 1 new message!", value: () => 0 },
-      { label: "💡 Hint: stop clicking!", value: () => -1 },
-      { label: "🎉 Free Confetti!", value: () => 0 }
+      { label: "🚨 CAREFUL!", value: () => 0 },
+      { label: "🎁 FREE bonus!", value: () => 0 },
+      { label: "🔥 DOUBLE SCORE", value: () => 0 },
+      { label: "✨ Win BIG!", value: () => 0 },
+      { label: "💥 CLICK ME!", value: () => 0 },
+      { label: "📈 LVL UP!", value: () => 0 },
+      { label: "🔔 1 new message!", value: () => 0 },
+      { label: "💡 Hint!", value: () => 0 },
+      { label: "🎉 Confettiii!", value: () => 0 }
     ];
+    
+    function playSound(id) {
+    const audio = document.getElementById(id);
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play();
+    }
+  }
+
+    function playRandomSound() {
+    const sounds = ["sfx-coin", "sfx-confetti", "sfx-fireworks", "sfx-sparkle", "sfx-wow"];
+    const random = sounds[Math.floor(Math.random() * sounds.length)];
+    playSound(random);
+  }
+
 
     function renderLeaderboard() {
       const fakeWin = Math.random() < 0.5;
@@ -116,7 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
       popup.style.top = `${Math.random() * 60 + 10}%`;
       popup.style.color = positive ? "green" : "red";
       document.body.appendChild(popup);
-      setTimeout(() => popup.remove(), 4000);
+      setTimeout(() => popup.remove(), 1000);
     }
 
     function showInterruptivePopup(type = "cookie") {
@@ -242,15 +257,26 @@ window.addEventListener("DOMContentLoaded", () => {
 
       btn.addEventListener("click", () => {
         if (gamePaused) return;
+        playRandomSound(); // 🔊 play fun effect
         const pts = type.value();
         comboCount = 0;
         if (pts > 0) showPopup(`+${pts}`, true);
         else if (pts < 0) showPopup(`${pts}`, false);
-        else showPopup("🎉 Wow! That did nothing!", true);
+        else {
+          const emojis = [
+          "💥", "🎊", "🎉", "✨", "🔥", "🎯", "💣", "🧨", "⚡", "💎",
+          "🪄", "🌈", "🤑", "🤩", "😵‍💫", "🎆", "🚀", "💸", "🍭", "🍕",
+          "📱", "💻", "📢", "🎮", "🧁", "🥳", "👑", "🎁", "🧠", "🤯"
+        ];
+
+        const burst = Array.from({ length: 3 }, () => emojis[Math.floor(Math.random() * emojis.length)]).join(" ");
+          showPopup(burst, true);
+        }
         score += pts;
         updateProgressBars();
         btn.remove();
       });
+
 
       document.body.appendChild(btn);
       setTimeout(() => { if (btn.parentNode) btn.remove(); }, 7000);
