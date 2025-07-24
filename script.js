@@ -5,8 +5,11 @@ let comboCount = 0;
 let lastClickTime = 0;
 let gamePaused = false;
 let passiveScore = 0;
-
+let goalBtnLastClick = 0;
+let userName = "YOU";
+let userAge = "-";
 let leaderboardData = [];
+let goalAnimationInterval = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   const timerEl = document.getElementById("timer");
@@ -18,169 +21,292 @@ window.addEventListener("DOMContentLoaded", () => {
   leaderboardTitle.style.display = "none";
   list.style.display = "none";
 
-  const popupTypes = [
-    { label: "🔥 Boost!", value: () => Math.floor(Math.random() * 6) + 5 },
-    { label: "💣 Trap!", value: () => -Math.floor(Math.random() * 5 + 1) },
-    { label: "🎁 Bonus", value: () => Math.floor(Math.random() * 4 + 2) },
-    { label: "🤯 Fake Bonus", value: () => -Math.floor(Math.random() * 3 + 1) },
-    { label: "🧠 Focus Up", value: () => 0 },
-    { label: "👀 Watch out!", value: () => 0 },
-    { label: "💡 Hint?", value: () => Math.random() < 0.5 ? 2 : -2 },
-    { label: "✨ Tap Me!", value: () => Math.random() < 0.7 ? Math.floor(Math.random() * 3 + 1) : 0 },
-    { label: "🌀 Confuse", value: () => 0 },
-    { label: "❓Random", value: () => Math.floor(Math.random() * 7) - 3 }
-  ];
+  const introOverlay = document.createElement("div");
+  introOverlay.style = `
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999;
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    padding: 20px;
+  `;
+  introOverlay.innerHTML = `
+    <h2>🎓 Welcome to the Game of Focus™</h2>
+    <p>Just keep clicking this emoji: <strong>💡</strong> to earn real points.</p>
+    <p>Ignore the distractions. Stay focused.</p>
+    <br>
+    <label>What's your name? <input id="user-name" type="text" /></label><br><br>
+    <label>Age? <input id="user-age" type="number" /></label><br><br>
+    <button id="start-game">Start</button>
+  `;
+  document.body.appendChild(introOverlay);
 
-  function renderLeaderboard() {
-    const sorted = [...leaderboardData].sort((a, b) => b.score - a.score);
-    list.innerHTML = "";
-    sorted.forEach(player => {
-      const li = document.createElement("li");
-      li.textContent = `${player.name}: ${player.score}`;
-      list.appendChild(li);
-    });
-  }
+  document.getElementById("start-game").addEventListener("click", () => {
+    const nameInput = document.getElementById("user-name").value.trim();
+    const ageInput = document.getElementById("user-age").value.trim();
+    if (nameInput) userName = nameInput;
+    if (ageInput) userAge = ageInput;
+    introOverlay.remove();
+    startGame();
+  });
 
-  function updateProgressBars() {
-    const totalScore = score + passiveScore;
-    const userPercent = Math.min((totalScore / 400) * 100, 95);
-    const opponentPercent = Math.min(userPercent + 5 + Math.random() * 3, 100);
-    userProgressEl.style.width = `${userPercent}%`;
-    opponentProgressEl.style.width = `${opponentPercent}%`;
-  }
+  function startGame(skipIntro = false) {
+    score = 0;
+    timeLeft = 60;
+    comboCount = 0;
+    lastClickTime = 0;
+    passiveScore = 0;
+    goalBtnLastClick = 0;
+    gamePaused = false;
+    clearInterval(interval);
+    clearInterval(goalAnimationInterval);
 
-  function showPopup(text, positive = true) {
-    const popup = document.createElement("div");
-    popup.textContent = text;
-    popup.className = "point-popup";
-    popup.style.left = `${Math.random() < 0.5 ? 5 + Math.random() * 20 : 75 + Math.random() * 20}%`;
-    popup.style.top = `${Math.random() * 60 + 10}%`;
-    popup.style.color = positive ? "green" : "red";
-    document.body.appendChild(popup);
-    setTimeout(() => popup.remove(), 4000);
-  }
+    document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
+    document.getElementById("true-goal-button")?.remove();
+    document.getElementById("play-again")?.remove();
+    leaderboardTitle.style.display = "none";
+    list.style.display = "none";
 
-  function showInterruptivePopup() {
-    gamePaused = true;
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = `
-      <div style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
-                  background: #fff; border: 2px solid #444; padding: 20px; z-index: 9999;
-                  box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; text-align: center;">
-        <p>📢 Please accept our new cookie policy to continue.</p>
-        <button id="accept-popup">Accept</button>
-      </div>`;
-    document.body.appendChild(wrapper);
-    document.getElementById("accept-popup").addEventListener("click", () => {
-      wrapper.remove();
-      gamePaused = false;
-    });
-  }
+    const popupTypes = [
+      { label: "🚨 Time’s running out!", value: () => 0 },
+      { label: "🎁 Claim your FREE bonus!", value: () => Math.random() < 0.3 ? Math.floor(Math.random() * 5) + 1 : 0 },
+      { label: "🔥 DOUBLE YOUR SCORE", value: () => { score = 0; return 0; } },
+      { label: "✨ Win BIG now!", value: () => 0 },
+      { label: "💥 Click me for sparkles!", value: () => Math.random() < 0.5 ? 3 : -3 },
+      { label: "📈 Fake Level Up!", value: () => 0 },
+      { label: "🔔 You have 1 new message!", value: () => 0 },
+      { label: "💡 Hint: stop clicking!", value: () => -1 },
+      { label: "🎉 Free Confetti!", value: () => 0 }
+    ];
 
-  function spawnClickPopup() {
-    const type = popupTypes[Math.floor(Math.random() * popupTypes.length)];
-    const btn = document.createElement("button");
-    btn.className = "popup-button";
-    btn.textContent = type.label;
-
-    let left = Math.random() * 80 + 10;
-    let top = Math.random() * 50 + 20;
-    btn.style.left = `${left}%`;
-    btn.style.top = `${top}%`;
-
-    // Random behaviors
-    const behaviors = ["bounce", "jiggle", "spin", "dodge"];
-    const chosen = new Set();
-    const count = Math.floor(Math.random() * 3) + 1;
-    while (chosen.size < count) {
-      chosen.add(behaviors[Math.floor(Math.random() * behaviors.length)]);
-    }
-    chosen.forEach(b => btn.classList.add(b));
-
-    if (chosen.has("dodge")) {
-      btn.addEventListener("mousemove", (e) => {
-        const rect = btn.getBoundingClientRect();
-        const dx = e.clientX - (rect.left + rect.width / 2);
-        const dy = e.clientY - (rect.top + rect.height / 2);
-        const distance = Math.hypot(dx, dy);
-        if (distance < 50) {
-          left = Math.max(5, Math.min(90, left + (Math.random() - 0.5) * 10));
-          top = Math.max(10, Math.min(80, top + (Math.random() - 0.5) * 10));
-          btn.style.left = `${left}%`;
-          btn.style.top = `${top}%`;
-        }
-      });
-    }
-
-    btn.addEventListener("click", () => {
-      if (gamePaused) return;
-
-      const now = Date.now();
-      let pts = type.value();
-      let positive = pts >= 0;
-
-      if (pts > 0 && now - lastClickTime < 2000) {
-        comboCount++;
-        pts += comboCount;
-        showPopup(`🔥 Combo x${comboCount}! +${pts}`, true);
-      } else if (pts > 0) {
-        comboCount = 1;
-        showPopup(`+${pts}`, true);
-      } else if (pts < 0) {
-        comboCount = 0;
-        showPopup(`${pts}`, false);
-      } else {
-        comboCount = 0;
-        showPopup(`🙃 Nothing happened`, true);
-      }
-
-      lastClickTime = now;
-      score += pts;
-      updateProgressBars();
-      btn.remove();
-    });
-
-    document.body.appendChild(btn);
-
-    setTimeout(() => {
-      if (btn.parentNode) btn.remove();
-    }, 7000);
-  }
-
-  interval = setInterval(() => {
-    if (gamePaused) return;
-
-    timeLeft--;
-    passiveScore += 0.3;
-    updateProgressBars();
-
-    const popupAttempts = Math.floor(Math.random() * 3) + 1;
-    for (let i = 0; i < popupAttempts; i++) {
-      if (Math.random() < 0.7) spawnClickPopup();
-    }
-
-    if (timeLeft === 30) showInterruptivePopup();
-
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      timerEl.textContent = "Time's up!";
-      document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
-
-      const topScore = score + Math.floor(Math.random() * 3) + 2;
+    function renderLeaderboard() {
+      const fakeWin = Math.random() < 0.5;
+      const topScore = score + (fakeWin ? 0 : Math.floor(Math.random() * 10) + 5);
       leaderboardData = [
         { name: "Player1", score: topScore },
-        { name: "YOU", score: score },
+        { name: userName, score: score },
         { name: "Player2", score: Math.floor(score * 0.9) },
         { name: "Player3", score: Math.floor(score * 0.7) }
       ];
-
-      leaderboardTitle.style.display = "block";
-      list.style.display = "block";
-      renderLeaderboard();
-    } else {
-      timerEl.textContent = `Time left: ${timeLeft}s`;
+      list.innerHTML = "";
+      leaderboardData.sort((a, b) => b.score - a.score).forEach(player => {
+        const li = document.createElement("li");
+        li.textContent = `${player.name}: ${player.score}`;
+        list.appendChild(li);
+      });
     }
-  }, 1000);
 
-  updateProgressBars();
+    function updateProgressBars() {
+      const maxScore = 50;
+      const totalScore = score + passiveScore;
+      const userPercent = Math.min((totalScore / maxScore) * 100, 95);
+      const opponentPercent = Math.min(userPercent + 5 + Math.random() * 4, 100);
+      userProgressEl.style.width = `${userPercent}%`;
+      opponentProgressEl.style.width = `${opponentPercent}%`;
+    }
+
+    function showPopup(text, positive = true) {
+      const popup = document.createElement("div");
+      popup.textContent = text;
+      popup.className = "point-popup";
+      popup.style.left = `${Math.random() * 80 + 10}%`;
+      popup.style.top = `${Math.random() * 60 + 10}%`;
+      popup.style.color = positive ? "green" : "red";
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 4000);
+    }
+
+    function showInterruptivePopup(type = "cookie") {
+  gamePaused = true;
+  clearInterval(goalAnimationInterval);
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "interruptive-popup";
+  let message = "📢 Please accept our new cookie policy to continue.";
+  if (type === "feedback") message = "📝 We'd love your feedback!";
+  if (type === "follow") message = "📸 Follow us on Instagram!";
+
+  wrapper.innerHTML = `
+    <div id="interrupt-box" style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+                background: #fff; border: 2px solid #444; padding: 20px; z-index: 9999;
+                box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; text-align: center;">
+      <p>${message}</p>
+      <button id="accept-popup">Accept</button>
+    </div>`;
+
+  document.body.appendChild(wrapper);
+  const popupBox = document.getElementById("interrupt-box");
+
+  // Enable dodging for 10 seconds
+  let dodging = true;
+  const dodgeTimer = setTimeout(() => {
+    dodging = false;
+  }, 10000);
+
+  popupBox.addEventListener("mousemove", (e) => {
+    if (!dodging) return;
+    const dx = (Math.random() - 0.5) * 40;
+    const dy = (Math.random() - 0.5) * 40;
+    popupBox.style.left = `${50 + dx}%`;
+    popupBox.style.top = `${30 + dy}%`;
+    popupBox.style.transform = "translate(-50%, -50%)";
+  });
+
+  document.getElementById("accept-popup").addEventListener("click", () => {
+    clearTimeout(dodgeTimer);
+    wrapper.remove();
+    gamePaused = false;
+    goalAnimationInterval = animateGoalButton();
+  });
+}
+
+
+    const trueGoalBtn = document.createElement("button");
+    trueGoalBtn.id = "true-goal-button";
+    trueGoalBtn.className = "popup-button";
+    trueGoalBtn.textContent = "💡";
+    trueGoalBtn.style.position = "absolute";
+    trueGoalBtn.style.left = "50%";
+    trueGoalBtn.style.top = "25%";
+    trueGoalBtn.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(trueGoalBtn);
+
+    const goalButtonAnimations = ["bounce", "jiggle", "spin", "shake", "wobble", "slide"];
+    function animateGoalButton() {
+      return setInterval(() => {
+        if (gamePaused) return;
+        const newLeft = Math.random() * 80 + 10;
+        const newTop = Math.random() * 60 + 20;
+        trueGoalBtn.style.left = `${newLeft}%`;
+        trueGoalBtn.style.top = `${newTop}%`;
+        trueGoalBtn.classList.remove(...goalButtonAnimations);
+        const randomAnim = goalButtonAnimations[Math.floor(Math.random() * goalButtonAnimations.length)];
+        trueGoalBtn.classList.add(randomAnim);
+      }, 1000);
+    }
+    goalAnimationInterval = animateGoalButton();
+
+    trueGoalBtn.addEventListener("click", () => {
+      const now = Date.now();
+      if (now - goalBtnLastClick < 1200 || gamePaused) return;
+      goalBtnLastClick = now;
+      let pts = 1;
+      if (now - lastClickTime < 2000) {
+        comboCount++;
+        pts += comboCount;
+        showPopup(`💡 Combo x${comboCount}! +${pts}`, true);
+      } else {
+        comboCount = 1;
+        showPopup(`+${pts}`, true);
+      }
+      lastClickTime = now;
+      score += pts;
+      updateProgressBars();
+    });
+
+    function spawnClickPopup() {
+      if (gamePaused) return;
+      const type = popupTypes[Math.floor(Math.random() * popupTypes.length)];
+      const btn = document.createElement("button");
+      btn.className = "popup-button";
+      btn.textContent = type.label;
+      let left = Math.random() * 80 + 10;
+      let top = Math.random() * 50 + 20;
+      btn.style.left = `${left}%`;
+      btn.style.top = `${top}%`;
+
+      const behaviors = ["bounce", "jiggle", "spin", "dodge", "shake"];
+      const chosen = new Set();
+      const count = Math.floor(Math.random() * 3) + 1;
+      while (chosen.size < count) {
+        chosen.add(behaviors[Math.floor(Math.random() * behaviors.length)]);
+      }
+      chosen.forEach(b => btn.classList.add(b));
+
+      if (chosen.has("dodge")) {
+        btn.addEventListener("mousemove", (e) => {
+          const rect = btn.getBoundingClientRect();
+          const dx = e.clientX - (rect.left + rect.width / 2);
+          const dy = e.clientY - (rect.top + rect.height / 2);
+          const distance = Math.hypot(dx, dy);
+          if (distance < 50) {
+            left = Math.max(5, Math.min(90, left + (Math.random() - 0.5) * 10));
+            top = Math.max(10, Math.min(80, top + (Math.random() - 0.5) * 10));
+            btn.style.left = `${left}%`;
+            btn.style.top = `${top}%`;
+          }
+        });
+      }
+
+      btn.addEventListener("click", () => {
+        if (gamePaused) return;
+        const pts = type.value();
+        comboCount = 0;
+        if (pts > 0) showPopup(`+${pts}`, true);
+        else if (pts < 0) showPopup(`${pts}`, false);
+        else showPopup("🎉 Wow! That did nothing!", true);
+        score += pts;
+        updateProgressBars();
+        btn.remove();
+      });
+
+      document.body.appendChild(btn);
+      setTimeout(() => { if (btn.parentNode) btn.remove(); }, 7000);
+    }
+
+    interval = setInterval(() => {
+      if (gamePaused) return;
+      timeLeft--;
+      passiveScore += 0.3;
+      updateProgressBars();
+
+      const popupAttempts = Math.floor(Math.random() * 3) + 1;
+      for (let i = 0; i < popupAttempts; i++) {
+        if (Math.random() < 0.9) spawnClickPopup();
+      }
+
+      if (timeLeft === 30) showInterruptivePopup("cookie");
+      if (timeLeft === 20) showInterruptivePopup("feedback");
+      if (timeLeft === 10) showInterruptivePopup("follow");
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        clearInterval(goalAnimationInterval);
+        timerEl.textContent = "Time's up!";
+        document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
+        document.getElementById("true-goal-button")?.remove();
+        leaderboardTitle.style.display = "block";
+        list.style.display = "block";
+        renderLeaderboard();
+
+        const again = document.createElement("button");
+        again.id = "play-again";
+        again.textContent = "🔁 Play Again";
+        again.style = `
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 12px 20px;
+          font-size: 1.2rem;
+          border-radius: 8px;
+          background: #ccc;
+          border: 2px solid #999;
+          cursor: pointer;
+          z-index: 10000;
+        `;
+        again.addEventListener("click", () => {
+          startGame(true);
+        });
+        document.body.appendChild(again);
+      } else {
+        timerEl.textContent = `Time left: ${timeLeft}s`;
+      }
+    }, 1000);
+
+    updateProgressBars();
+  }
 });

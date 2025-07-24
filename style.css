@@ -121,6 +121,17 @@ ul#leaderboard-list li {
   animation: pulse 1s infinite;
 }
 
+/* Main goal button – visually boring on purpose */
+#true-goal-button {
+  background: #ccc !important;
+  border: 2px solid #999 !important;
+  color: #000;
+  box-shadow: none !important;
+  animation: none !important;
+  font-weight: normal;
+  font-size: 1.1rem;
+}
+
 /* Animations */
 @keyframes pulse {
   0% { transform: scale(1); }
@@ -138,6 +149,44 @@ ul#leaderboard-list li {
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(3deg); }
+}
+
+@keyframes slide {
+  0% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  100% { transform: translateX(-5px); }
+}
+
+.popup-button.bounce { animation: bounceIn 0.6s ease; }
+.popup-button.jiggle:hover { animation: jiggle 0.4s infinite; }
+.popup-button.spin { animation: spinLoop 2s linear infinite; }
+.popup-button.shake { animation: shake 0.6s infinite; }
+.popup-button.wobble { animation: wobble 0.8s infinite; }
+.popup-button.slide { animation: slide 1s infinite; }
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes jiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  25% { transform: rotate(2deg); }
+  50% { transform: rotate(-2deg); }
+  75% { transform: rotate(1deg); }
+}
+
+@keyframes spinLoop {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @media screen and (max-width: 768px) {
