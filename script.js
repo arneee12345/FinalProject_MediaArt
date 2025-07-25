@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
     
     const endingMessages = {
       focused: [
-        "You missed all the sparkles and didn't even win..",
+        "You missed the fun and didn't even win..",
         "So close to being first.. Try again!"
       ],
       distracted: [
@@ -124,8 +124,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
     function renderLeaderboard() {
-      const fakeWin = Math.random() < 0.5;
-      const topScore = score + (fakeWin ? 0 : Math.floor(Math.random() * 10) + 5);
+      const topScore = score + Math.floor(Math.random() * 5) + 1;
       leaderboardData = [
         { name: "Player1", score: topScore },
         { name: userName, score: score },
@@ -141,8 +140,9 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
 
+
     function updateProgressBars() {
-      const maxScore = 50;
+      const maxScore = 100;
       const totalScore = score + passiveScore;
       const userPercent = Math.min((totalScore / maxScore) * 100, 95);
       const opponentPercent = Math.min(userPercent + 5 + Math.random() * 4, 100);
