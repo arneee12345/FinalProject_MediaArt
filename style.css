@@ -1,4 +1,4 @@
-/* Colorful Meme Style UI */
+/* Colorful background with pulsing animation */
 body {
   margin: 0;
   padding: 0;
@@ -11,11 +11,13 @@ body {
   overflow-x: hidden;
 }
 
+/* Smooth background color shift */
 @keyframes bgPulse {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
+/* Headings */
 h1 {
   font-size: 3rem;
   margin-top: 1.5rem;
@@ -39,7 +41,7 @@ h2 {
   animation: wiggle 2s infinite;
 }
 
-/* Leaderboard */
+/* Leaderboard styles */
 ul#leaderboard-list {
   list-style: none;
   padding: 0;
@@ -63,7 +65,7 @@ ul#leaderboard-list li {
   animation: bounceIn 0.5s ease;
 }
 
-/* Progress Bars */
+/* Progress Bars styles */
 .progress-container {
   max-width: 380px;
   margin: 2rem auto 1rem;
@@ -98,6 +100,7 @@ ul#leaderboard-list li {
   transition: width 0.4s ease;
 }
 
+/* color coded fill bars */
 .progress-fill.user {
   background: repeating-linear-gradient(45deg, lime, lime 10px, #00ffcc 10px, #00ffcc 20px);
 }
@@ -106,7 +109,7 @@ ul#leaderboard-list li {
   background: repeating-linear-gradient(-45deg, red, red 10px, orange 10px, orange 20px);
 }
 
-/* Popups */
+/* Popup feedback events */
 .point-popup {
   position: absolute;
   font-size: 2rem;
@@ -121,7 +124,7 @@ ul#leaderboard-list li {
   animation: explode 0.6s ease-out, shake 0.6s infinite;
   z-index: 9999;
 }
-
+/* boring numb style for actual point popup  */
 .point-popup.true-popup {
   background: #ccc;
   border: 1px solid #999;
@@ -131,7 +134,7 @@ ul#leaderboard-list li {
   font-weight: normal;
 }
 
-/* Distractor Buttons */
+/* Distraction Button styles */
 .popup-button {
   position: absolute;
   font-size: 1.3rem;
@@ -148,7 +151,7 @@ ul#leaderboard-list li {
   transition: all 0.3s ease;
 }
 
-/* Distractor Button Animations */
+/* Distraction Button Animations */
 .popup-button.spin {
   animation: spinLoop 1.5s linear infinite;
 }
@@ -180,7 +183,7 @@ ul#leaderboard-list li {
   font-size: 1.1rem;
 }
 
-/* Animations */
+/* Animation keyframes */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.2); }
@@ -245,7 +248,7 @@ ul#leaderboard-list li {
   100% { transform: scale(1.2); opacity: 1; }
 }
 
-/* Responsive */
+/* Responsive design */
 @media screen and (max-width: 768px) {
   body {
     padding: 10px;

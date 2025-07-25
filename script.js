@@ -1,3 +1,4 @@
+// Initial game variables
 let score = 0;
 let timeLeft = 60;
 let interval;
@@ -21,9 +22,11 @@ window.addEventListener("DOMContentLoaded", () => {
   const userProgressEl = document.getElementById("user-progress");
   const opponentProgressEl = document.getElementById("opponent-progress");
 
+  // Hide leaderboard by default
   leaderboardTitle.style.display = "none";
   list.style.display = "none";
 
+   // Create intro overlay for name and age input
   const introOverlay = document.createElement("div");
   introOverlay.style = `
     position: fixed;
@@ -47,6 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
   `;
   document.body.appendChild(introOverlay);
 
+  // Start game on button click
   document.getElementById("start-game").addEventListener("click", () => {
     const nameInput = document.getElementById("user-name").value.trim();
     const ageInput = document.getElementById("user-age").value.trim();
@@ -56,7 +60,9 @@ window.addEventListener("DOMContentLoaded", () => {
     startGame();
   });
 
+  // Game starting logic
   function startGame(skipIntro = false) {
+    // Reset state
     score = 0;
     timeLeft = 60;
     comboCount = 0;
@@ -67,6 +73,7 @@ window.addEventListener("DOMContentLoaded", () => {
     clearInterval(interval);
     clearInterval(goalAnimationInterval);
 
+    // Cleanup UI
     document.querySelectorAll(".popup-button").forEach(btn => btn.remove());
     document.getElementById("true-goal-button")?.remove();
     document.getElementById("play-again")?.remove();
@@ -74,6 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
     leaderboardTitle.style.display = "none";
     list.style.display = "none";
 
+    // Types of fake popup distractions
     const popupTypes = [
       { label: "🚨 CAREFUL!", value: () => 0 },
       { label: "🎁 FREE bonus!", value: () => 0 },
@@ -86,6 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
       { label: "🎉 Confettiii!", value: () => 0 }
     ];
     
+    // Behavior-based ending messages
     const endingMessages = {
       focused: [
         "You missed the fun and didn't even win..",
@@ -101,6 +110,7 @@ window.addEventListener("DOMContentLoaded", () => {
       ]
     };
 
+    // Utility: play a sound by ID
     function playSound(id) {
     const audio = document.getElementById(id);
     if (audio) {
@@ -123,6 +133,7 @@ window.addEventListener("DOMContentLoaded", () => {
     playSound(random);
   }
 
+    // Display leaderboard at the end
     function renderLeaderboard() {
       const topScore = score + Math.floor(Math.random() * 5) + 1;
       leaderboardData = [
@@ -140,7 +151,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
+    // Update progress bars
     function updateProgressBars() {
       const maxScore = 100;
       const totalScore = score + passiveScore;
@@ -150,6 +161,7 @@ window.addEventListener("DOMContentLoaded", () => {
       opponentProgressEl.style.width = `${opponentPercent}%`;
     }
 
+    // Show a floating point popup
     function showPopup(text, positive = true, isReal = false) {
       const popup = document.createElement("div");
       popup.textContent = text;
@@ -165,31 +177,32 @@ window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => popup.remove(), 1200);
     }
 
+    // Simulate interruptive popups
     function showInterruptivePopup(type = "cookie") {
-  gamePaused = true;
-  clearInterval(goalAnimationInterval);
+      gamePaused = true;
+      clearInterval(goalAnimationInterval);
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "interruptive-popup";
-  let message = "📢 Please accept our new cookie policy to continue.";
-  if (type === "feedback") message = "📝 You are giving us a 5 star rating, correct?";
-  if (type === "follow") message = "📸 You have to follow us on all socials afterwards!";
+      const wrapper = document.createElement("div");
+      wrapper.className = "interruptive-popup";
+      let message = "📢 Please accept our new cookie policy to continue.";
+      if (type === "feedback") message = "📝 You are giving us a 5 star rating, correct?";
+      if (type === "follow") message = "📸 You have to follow us on all socials afterwards!";
 
-  wrapper.innerHTML = `
-    <div id="interrupt-box" style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
-                background: #fff; border: 2px solid #444; padding: 20px; z-index: 9999;
-                box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; text-align: center;">
-      <p>${message}</p>
-      <button id="accept-popup">Accept</button>
-    </div>`;
+      wrapper.innerHTML = `
+        <div id="interrupt-box" style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+                    background: #fff; border: 2px solid #444; padding: 20px; z-index: 9999;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.5); font-family: sans-serif; text-align: center;">
+          <p>${message}</p>
+          <button id="accept-popup">Accept</button>
+        </div>`;
 
-  document.body.appendChild(wrapper);
-  const popupBox = document.getElementById("interrupt-box");
+      document.body.appendChild(wrapper);
+      const popupBox = document.getElementById("interrupt-box");
 
-  let dodging = true;
-  const dodgeTimer = setTimeout(() => {
-    dodging = false;
-  }, 10000);
+      let dodging = true;
+      const dodgeTimer = setTimeout(() => {
+        dodging = false;
+      }, 10000);
 
   popupBox.addEventListener("mousemove", (e) => {
     if (!dodging) return;
@@ -208,7 +221,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 }
 
-
+    // Spawn and animate main goal button
     const trueGoalBtn = document.createElement("button");
     trueGoalBtn.id = "true-goal-button";
     trueGoalBtn.className = "popup-button";
@@ -234,6 +247,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     goalAnimationInterval = animateGoalButton();
 
+    // Logic for clicking the real goal button
     trueGoalBtn.addEventListener("click", () => {
       realClicks++;
       const now = Date.now();
@@ -254,6 +268,7 @@ window.addEventListener("DOMContentLoaded", () => {
       updateProgressBars();
     });
 
+    // Spawn fake distraction popups
     function spawnClickPopup() {
       if (gamePaused) return;
       const type = popupTypes[Math.floor(Math.random() * popupTypes.length)];
@@ -288,6 +303,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
       }
 
+      // Click effect
       btn.addEventListener("click", () => {
         if (gamePaused) return;
         fakeClicks++;
@@ -316,21 +332,25 @@ window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => { if (btn.parentNode) btn.remove(); }, 7000);
     }
 
+    // Main game loop
     interval = setInterval(() => {
       if (gamePaused) return;
       timeLeft--;
       passiveScore += 0.3;
       updateProgressBars();
 
+      // Spawn distractions
       const popupAttempts = Math.floor(Math.random() * 3) + 1;
       for (let i = 0; i < popupAttempts; i++) {
         if (Math.random() < 0.9) spawnClickPopup();
       }
 
+      // Interruptive popups at milestones
       if (timeLeft === 30) showInterruptivePopup("cookie");
       if (timeLeft === 20) showInterruptivePopup("feedback");
       if (timeLeft === 10) showInterruptivePopup("follow");
 
+      // Game ends
       if (timeLeft <= 0) {
         clearInterval(interval);
         clearInterval(goalAnimationInterval);
@@ -368,7 +388,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }, 1000);
 
-
+  // Ending analysis message
   function showEndingMessage() {
     let behavior;
     const total = realClicks + fakeClicks;
