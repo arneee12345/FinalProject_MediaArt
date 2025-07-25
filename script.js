@@ -37,7 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
     padding: 20px;
   `;
   introOverlay.innerHTML = `
-    <h2>🎓 Welcome to the Game of Focus™</h2>
+    <h2>🎓 Welcome to Better Than You</h2>
     <p>Just keep clicking this emoji: <strong>💡</strong> to earn real points.</p>
     <p>Ignore the distractions. Stay focused.</p>
     <br>
